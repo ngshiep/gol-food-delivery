@@ -7,7 +7,7 @@ import (
 
 // khai báo interface ở nơi dùng nó.
 type CreateRestaurantStore interface {
-	CreateRestaurant(context context.Context, data *restaurantmodel.RestaurantCreate) error
+	Create(context context.Context, data *restaurantmodel.RestaurantCreate) error
 }
 
 func NewCreateRestaurantBiz(store CreateRestaurantStore) *createRestaurantBiz {
@@ -19,8 +19,13 @@ type createRestaurantBiz struct {
 }
 
 // thực thi logic và validate ở đây rồi sẽ đẩy vào db
+// implement func của interface
 func (biz *createRestaurantBiz) CreateRestaurant(context context.Context, data *restaurantmodel.RestaurantCreate) error {
-	if err := biz.store.CreateRestaurant(context, data); err != nil {
+	if err := data.Validate(); err != nil {
+		return err
+	}
+
+	if err := biz.store.Create(context, data); err != nil {
 		return err
 	}
 	return nil

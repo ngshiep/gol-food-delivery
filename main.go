@@ -1,6 +1,7 @@
 package main
 
 import (
+	"awesomeProject/component/appctx"
 	"awesomeProject/module/restaurant/transport/ginrestuarant"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -26,13 +27,19 @@ func main() {
 	}
 
 	log.Println(db)
+	db = db.Debug()
 
 	r := gin.Default()
 
 	v1 := r.Group("/v1")
 
 	restaurants := v1.Group("/restaurants")
-	restaurants.POST("", ginrestuarant.CreateRestaurant(db))
+
+	appContext := appctx.NewAppContext(db)
+
+	restaurants.GET("", ginrestuarant.ListRestaurant(appContext))
+	restaurants.POST("", ginrestuarant.CreateRestaurant(appContext))
+	restaurants.DELETE("/:id", ginrestuarant.DeleteRestaurant(appContext))
 
 	r.Run()
 }
