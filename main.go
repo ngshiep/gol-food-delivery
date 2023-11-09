@@ -2,6 +2,7 @@ package main
 
 import (
 	"awesomeProject/component/appctx"
+	"awesomeProject/middleware"
 	"awesomeProject/module/restaurant/transport/ginrestuarant"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -28,14 +29,13 @@ func main() {
 
 	log.Println(db)
 	db = db.Debug()
+	appContext := appctx.NewAppContext(db)
 
 	r := gin.Default()
+	r.Use(middleware.Recover(appContext))
 
 	v1 := r.Group("/v1")
-
 	restaurants := v1.Group("/restaurants")
-
-	appContext := appctx.NewAppContext(db)
 
 	restaurants.GET("", ginrestuarant.ListRestaurant(appContext))
 	restaurants.POST("", ginrestuarant.CreateRestaurant(appContext))

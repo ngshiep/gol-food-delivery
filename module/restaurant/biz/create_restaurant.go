@@ -1,6 +1,7 @@
 package restaurantbiz
 
 import (
+	"awesomeProject/common"
 	restaurantmodel "awesomeProject/module/restaurant/model"
 	"context"
 )
@@ -22,11 +23,11 @@ type createRestaurantBiz struct {
 // implement func của interface
 func (biz *createRestaurantBiz) CreateRestaurant(context context.Context, data *restaurantmodel.RestaurantCreate) error {
 	if err := data.Validate(); err != nil {
-		return err
+		return common.ErrInvalidRequest(err)
 	}
 
 	if err := biz.store.Create(context, data); err != nil {
-		return err
+		return common.ErrCannotCreateEntity(restaurantmodel.EntityName, err)
 	}
 	return nil
 }
